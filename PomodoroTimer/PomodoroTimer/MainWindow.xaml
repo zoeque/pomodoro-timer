@@ -5,8 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PomodoroTimer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+        Title="MainWindow" Height="65" Width="65"
+		Background="Transparent" AllowsTransparency="True" WindowStyle="None"
+		MouseLeftButtonDown="Window_MouseLeftButtonDown"
+		Topmost="True">
+	<Grid Background="Transparent">
+		<Ellipse Name="backgroundEllipse" Width="65" Height="65" Fill="Red" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+		<TextBlock Name="countdownText" FontSize="36" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Text="25"/>
+	</Grid>
 </Window>
