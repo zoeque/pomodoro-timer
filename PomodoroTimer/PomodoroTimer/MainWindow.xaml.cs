@@ -24,10 +24,13 @@ namespace PomodoroTimer
 		private const int workDuration = 25 * 60;
 		// 休憩時間の長さ（5分）
 		private const int breakDuration = 5 * 60;
-		// 長い休憩時間の長さ（30分）
-		private const int longBreakDuration = 30 * 60;
+		// 長い休憩時間の長さ（15分）
+		private const int longBreakDuration = 15 * 60;
 		// 休憩回数をカウントする変数
 		private int breakCount;
+		// タイマーが動作中かどうかを示すフラグ
+		private bool isTimerRunning;
+
 
 
 #pragma warning disable CS8618
@@ -54,7 +57,9 @@ namespace PomodoroTimer
 			// 初期状態を作業時間に設定
 			isWorkPeriod = true;
 			// 休憩回数を初期化
-			breakCount = 0; 
+			breakCount = 0;
+			// タイマーが動作中であることを設定
+			isTimerRunning = true; 
 
 			// タイマーを開始
 			timer.Start(); 
@@ -67,41 +72,45 @@ namespace PomodoroTimer
 		/// <param name="e">Event args</param>
 		private void Timer_Tick(object? sender, EventArgs e)
 		{
-			// 残り時間を1秒減少
-			remainingSeconds--;
-			// カウントダウンテキストを更新
-			UpdateCountdownText();
-			// 背景色を更新
-			UpdateBackgroundColor(); 
-
-			// 残り時間が0になった場合の処理
-			if (remainingSeconds == 0)
+			// タイマー動作中であればカウントを実行する
+			if (isTimerRunning)
 			{
-				if (isWorkPeriod)
-				{
-					// 作業時間から休憩時間に切り替え
-					isWorkPeriod = false;
-					// 休憩回数をカウント
-					breakCount++;
+				// 残り時間を1秒減少
+				remainingSeconds--;
+				// カウントダウンテキストを更新
+				UpdateCountdownText();
+				// 背景色を更新
+				UpdateBackgroundColor();
 
-					if (breakCount % 4 == 0)
+				// 残り時間が0になった場合の処理
+				if (remainingSeconds == 0)
+				{
+					if (isWorkPeriod)
 					{
-						// 4回目の休憩の場合、休憩時間を長くとり、カウンタをリセットする
-						remainingSeconds = longBreakDuration;
-						breakCount = 0;
+						// 作業時間から休憩時間に切り替え
+						isWorkPeriod = false;
+						// 休憩回数をカウント
+						breakCount++;
+
+						if (breakCount % 4 == 0)
+						{
+							// 4回目の休憩の場合、休憩時間を長くとり、カウンタをリセットする
+							remainingSeconds = longBreakDuration;
+							breakCount = 0;
+						}
+						else
+						{
+							// 通常の休憩
+							remainingSeconds = breakDuration;
+						}
 					}
 					else
 					{
-						// 通常の休憩
-						remainingSeconds = breakDuration;
+						isWorkPeriod = true; // 休憩時間から作業時間に切り替え
+						remainingSeconds = workDuration; // 作業時間を設定
 					}
+					UpdateBackgroundColor(); // 背景色を更新
 				}
-				else
-				{
-					isWorkPeriod = true; // 休憩時間から作業時間に切り替え
-					remainingSeconds = workDuration; // 作業時間を設定
-				}
-				UpdateBackgroundColor(); // 背景色を更新
 			}
 		}
 
@@ -122,9 +131,18 @@ namespace PomodoroTimer
 		/// </summary>
 		private void UpdateBackgroundColor()
 		{
-			// 作業時間なら赤、休憩時間なら水色に設定
-			backgroundEllipse.Fill = isWorkPeriod ? Brushes.Red : Brushes.LightBlue; 
+			if (isTimerRunning)
+			{
+				// 作業時間なら赤、休憩時間なら水色に設定
+				backgroundEllipse.Fill = isWorkPeriod ? Brushes.Red : Brushes.LightBlue; 
+			}
+			else
+			{
+				// タイマー停止中は緑色に設定
+				backgroundEllipse.Fill = Brushes.Green; 
+			}
 		}
+
 
 		/// <summary>
 		/// ドラッグアンドドロップのイベントハンドラ
@@ -136,5 +154,18 @@ namespace PomodoroTimer
 			// ウィンドウを移動
 			this.DragMove();
 		}
+
+
+		/// <summary>
+		/// ウィンドウをクリックしてタイマーを停止/再開するためのイベントハンドラ
+		/// </summary>
+		/// <param name="sender">sender</param>
+		/// <param name="e">event args</param>
+		private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+		{
+			isTimerRunning = !isTimerRunning; // タイマーの動作状態を切り替え
+			UpdateBackgroundColor(); // 背景色を更新
+		}
+
 	}
 }
