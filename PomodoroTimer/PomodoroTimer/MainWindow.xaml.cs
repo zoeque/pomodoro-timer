@@ -30,8 +30,10 @@ namespace PomodoroTimer
 		private int breakCount;
 		// タイマーが動作中かどうかを示すフラグ
 		private bool isTimerRunning;
-
-
+		// マウスの初期位置
+		private Point mouseStartPosition;
+		// ドラッグ中かどうかを示すフラグ
+		private bool isDragging;
 
 #pragma warning disable CS8618
 		public MainWindow()
@@ -145,27 +147,49 @@ namespace PomodoroTimer
 
 
 		/// <summary>
-		/// ドラッグアンドドロップのイベントハンドラ
+	    /// ウィンドウをドラッグで移動するためのイベントハンドラ
 		/// </summary>
 		/// <param name="sender">sender</param>
 		/// <param name="e">event args</param>
 		private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
-			// ウィンドウを移動
-			this.DragMove();
+			mouseStartPosition = e.GetPosition(this); // マウスの初期位置を記録
+			isDragging = false; // ドラッグフラグを初期化
 		}
-
 
 		/// <summary>
 		/// ウィンドウをクリックしてタイマーを停止/再開するためのイベントハンドラ
-		/// </summary>
+	    /// </summary>
 		/// <param name="sender">sender</param>
 		/// <param name="e">event args</param>
 		private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
 		{
-			isTimerRunning = !isTimerRunning; // タイマーの動作状態を切り替え
-			UpdateBackgroundColor(); // 背景色を更新
+			if (!isDragging)
+			{
+				isTimerRunning = !isTimerRunning; // タイマーの動作状態を切り替え
+				UpdateBackgroundColor(); // 背景色を更新
+			}
 		}
 
+		/// <summary>
+		/// マウス移動イベントハンドラ
+		/// </summary>
+		/// <param name="sender">sender</param>
+	    /// <param name="e">event args</param>
+		private void Window_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (e.LeftButton == MouseButtonState.Pressed)
+			{
+				Point currentPosition = e.GetPosition(this);
+				if ((Math.Abs(currentPosition.X - mouseStartPosition.X) > SystemParameters.MinimumHorizontalDragDistance) ||
+				(Math.Abs(currentPosition.Y - mouseStartPosition.Y) > SystemParameters.MinimumVerticalDragDistance))
+				{
+					// ドラッグフラグを設定
+					isDragging = true;
+					// ウィンドウを移動
+					this.DragMove(); 
+				}
+			}
+		}
 	}
 }

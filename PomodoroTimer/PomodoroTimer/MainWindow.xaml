@@ -9,6 +9,7 @@
 		Background="Transparent" AllowsTransparency="True" WindowStyle="None"
 		MouseLeftButtonDown="Window_MouseLeftButtonDown"
 		MouseLeftButtonUp="Window_MouseLeftButtonUp"
+		MouseMove="Window_MouseMove"
 		Topmost="True">
 	<Grid Background="Transparent">
 		<Ellipse Name="backgroundEllipse" Width="65" Height="65" Fill="Red" HorizontalAlignment="Center" VerticalAlignment="Center"/>
