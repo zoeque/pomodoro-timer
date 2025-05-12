@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Configuration;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -24,8 +25,8 @@ namespace PomodoroTimer
 		private const int workDuration = 25 * 60;
 		// 休憩時間の長さ（5分）
 		private const int breakDuration = 5 * 60;
-		// 長い休憩時間の長さ（15分）
-		private const int longBreakDuration = 15 * 60;
+		// 長い休憩時間の長さ（外部定義）
+		private int longBreakDuration;
 		// 休憩回数をカウントする変数
 		private int breakCount;
 		// タイマーが動作中かどうかを示すフラグ
@@ -61,7 +62,18 @@ namespace PomodoroTimer
 			// 休憩回数を初期化
 			breakCount = 0;
 			// タイマーが動作中であることを設定
-			isTimerRunning = true; 
+			isTimerRunning = true;
+
+
+			// App.config から長い休憩時間（分）を読み込み、秒に変換
+			string? longBreakMinutesStr = ConfigurationManager.AppSettings["LongBreakMinutes"];
+			if (!int.TryParse(longBreakMinutesStr, out int longBreakMinutes))
+			{
+				// 読込に失敗した場合は、30分のデフォルト値をセットする
+				longBreakMinutes = 30; 
+			}
+			longBreakDuration = longBreakMinutes * 60;
+
 
 			// タイマーを開始
 			timer.Start(); 
