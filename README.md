@@ -24,6 +24,12 @@ If you want to pause the Pomodoro timer, click on it and it will turn green.
 While green, the timer stops and does not count down.  
 ![](./images/green.png)  
 
+## Settings
+In the configuration file, you can set the length of time for long breaks in minutes.  
+If the setting is inappropriate or missing, the default value will be 30 minutes.  
+To change the setting, see the included PomodoroTimer.dll.config.  
+
 ## Development  
 - C#  
 - Windows Presentation Foundation(WPF)
+- .NET Framework 8.0
